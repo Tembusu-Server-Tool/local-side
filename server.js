@@ -1,24 +1,27 @@
 const express = require("express");
 const app = express();
 const net = require("net");
-var tcp = null;
 var response = null;
 
 function render(data) {
+    console.log(data)
+    const lines = data.split("\n")
     return data;
 }
 
-var server = net.createServer(function (socket) {
-    console.log("connected");
-    tcp = socket;
-    tcp.on("data", function (data) {
-        response.send(render(data.toString()))
-    })
+
+const client = new net.Socket();
+
+client.connect(4000, "192.168.51.112", function() {
+    console.log("connected!");
+});
+
+client.on("data", function(data) {
+    response.write(render(data.toString()))
 })
 
-
-server.listen(4000, function() {
-    console.log("Listening 4000")
+client.on("end", function(data) {
+    console.log("Tembusu is down")
 })
 
 app.listen(3000, () => {
@@ -29,16 +32,11 @@ app.get("/", (req, res) => {
     res.send("hello world!")
     
 })
-function handle(res) {
-    res.send(ans)
-}
 
-app.get("/update", (req, res) => {
-    console.log("new request")
-    if (tcp !== null) {
+app.get("/check", (req, res) => {
+    if (client !== null) {
         response = res
-        tcp.write("request\n")
-        
+        client.write("check\n")
     } else {
         res.send("Hellow world")
     }
