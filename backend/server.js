@@ -4,8 +4,10 @@ const net = require("net");
 var response = null;
 
 function render(data) {
-    console.log(data)
     const lines = data.split("\n")
+    lines.forEach(element => {
+        console.log(element)
+    });
     return data;
 }
 
